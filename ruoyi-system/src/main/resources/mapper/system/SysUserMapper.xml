@@ -141,7 +141,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
 		select user_id, email from sys_user where email = #{email} and del_flag = '0' limit 1
 	</select>
-	
+	<select id="findByNickName" resultType="com.ruoyi.common.core.domain.entity.SysUser">
+		select  user_id as userId,  user_name as userName,nick_name as nickName, phonenumber from sys_user where nick_name = #{nickName}
+	</select>
+
+	<select id="findByPhone" resultType="com.ruoyi.common.core.domain.entity.SysUser">
+		select user_id as userId,  user_name as userName,nick_name as nickName, phonenumber from sys_user where phonenumber = #{phone}
+	</select>
+
 	<insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
  		insert into sys_user(
  			<if test="userId != null and userId != 0">user_id,</if>

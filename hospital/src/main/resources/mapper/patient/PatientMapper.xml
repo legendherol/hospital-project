@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hospital.mapper.PatientMapper">
+    
+    <resultMap type="Patient" id="PatientResult">
+        <result property="patientId"    column="patient_id"    />
+        <result property="patientName"    column="patient_name" />
+        <result property="gender"    column="gender"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="idCard"    column="ID_card"    />
+        <result property="phone"    column="phone"    />
+        <result property="userId"    column="user_id"    />
+        <result property="age"    column="age"    />
+        <result property="address"    column="address"    />
+    </resultMap>
+
+    <sql id="selectPatientVo">
+        select patient_id, patient_name, gender, birthday, ID_card, phone, user_id, age, address from patient
+    </sql>
+
+    <select id="selectPatientList" parameterType="Patient" resultMap="PatientResult">
+        <include refid="selectPatientVo"/>
+        <where>  
+            <if test="patientName != null  and patientName != ''"> and patient_name like concat('%', #{patientName}, '%')</if>
+            <if test="gender != null  and gender != ''"> and gender = #{gender}</if>
+            <if test="params.beginBirthday != null and params.beginBirthday != '' and params.endBirthday != null and params.endBirthday != ''"> and birthday between #{params.beginBirthday} and #{params.endBirthday}</if>
+            <if test="idCard != null  and idCard != ''"> and ID_card = #{idCard}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="age != null "> and age = #{age}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+        </where>
+    </select>
+    
+    <select id="selectPatientByPatientId" parameterType="Long" resultMap="PatientResult">
+        <include refid="selectPatientVo"/>
+        where patient_id = #{patientId}
+    </select>
+    <select id="findByPhone" resultMap="PatientResult">
+        <include refid="selectPatientVo"/>
+        where phone = #{phone}
+    </select>
+
+    <insert id="insertPatient" parameterType="Patient" useGeneratedKeys="true" keyProperty="patientId">
+        insert into patient
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="patientName != null and patientName != ''">patient_name,</if>
+            <if test="gender != null and gender != ''">gender,</if>
+            <if test="birthday != null">birthday,</if>
+            <if test="idCard != null and idCard != ''">ID_card,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="age != null">age,</if>
+            <if test="address != null and address != ''">address,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="patientName != null and patientName != ''">#{patientName},</if>
+            <if test="gender != null and gender != ''">#{gender},</if>
+            <if test="birthday != null">#{birthday},</if>
+            <if test="idCard != null and idCard != ''">#{idCard},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="age != null">#{age},</if>
+            <if test="address != null and address != ''">#{address},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePatient" parameterType="Patient">
+        update patient
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="patientName != null and patientName != ''">patient_name = #{patientName},</if>
+            <if test="gender != null and gender != ''">gender = #{gender},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="idCard != null and idCard != ''">ID_card = #{idCard},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+        </trim>
+        where patient_id = #{patientId}
+    </update>
+
+    <delete id="deletePatientByPatientId" parameterType="Long">
+        delete from patient where patient_id = #{patientId}
+    </delete>
+
+    <delete id="deletePatientByPatientIds" parameterType="String">
+        delete from patient where patient_id in 
+        <foreach item="patientId" collection="array" open="(" separator="," close=")">
+            #{patientId}
+        </foreach>
+    </delete>
+</mapper>

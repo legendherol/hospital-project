@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hospital.mapper.KeyUpLogMapper">
+    
+    <resultMap type="KeyUpLog" id="KeyUpLogResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="name"    column="name"    />
+        <result property="des"    column="des"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectKeyUpLogVo">
+        select id, user_id, name, des, create_time from key_up_log
+    </sql>
+
+    <select id="selectKeyUpLogList" parameterType="KeyUpLog" resultMap="KeyUpLogResult">
+        <include refid="selectKeyUpLogVo"/>
+        <where>  
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="des != null  and des != ''"> and des = #{des}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectKeyUpLogById" parameterType="Long" resultMap="KeyUpLogResult">
+        <include refid="selectKeyUpLogVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertKeyUpLog" parameterType="KeyUpLog" useGeneratedKeys="true" keyProperty="id">
+        insert into key_up_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="des != null and des != ''">des,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="des != null and des != ''">#{des},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateKeyUpLog" parameterType="KeyUpLog">
+        update key_up_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="des != null and des != ''">des = #{des},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteKeyUpLogById" parameterType="Long">
+        delete from key_up_log where id = #{id}
+    </delete>
+
+    <delete id="deleteKeyUpLogByIds" parameterType="String">
+        delete from key_up_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

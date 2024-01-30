@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hospital.mapper.WorkTimeMapper">
+
+    <resultMap type="WorkTime" id="WorkTimeResult">
+        <result property="id"    column="id"    />
+        <result property="docId"    column="doc_id"    />
+        <result property="caseNumer"    column="case_numer"    />
+        <result property="workTime"    column="work_time"    />
+        <result property="offId"    column="off_id"    />
+    </resultMap>
+
+    <resultMap type="WorkTime" id="WorkTimeRes">
+        <result property="id"    column="id"    />
+        <result property="docId"    column="doc_id"    />
+        <result property="caseNumer"    column="case_numer"    />
+        <result property="workTime"    column="work_time"    />
+        <result property="offId"    column="off_id"    />
+        <association property="doctor" javaType="doctor">
+            <id column="doctorId" property="userId"></id>
+            <result column="username" property="username"></result>
+        </association>
+        <association property="office" javaType="office">
+            <id column="officeId" property="officeId"></id>
+            <result column="officeName" property="officeName"></result>
+        </association>
+    </resultMap>
+
+    <sql id="selectWorkTimeVo">
+        select id, doc_id, case_numer, work_time, off_id from work_time
+    </sql>
+
+    <sql id="selectWorkTimeVo1">
+        select w.id, doc_id, case_numer, work_time, off_id,d.username as username,o.office_name as officeName from work_time w
+        left join doctor d on  w.doc_id = d.user_id left join office o on d.dept_id = o.office_id
+    </sql>
+
+    <select id="selectWorkTimeList" parameterType="WorkTime" resultMap="WorkTimeRes">
+        <include refid="selectWorkTimeVo1"/>
+        <where>
+            <if test="docId != null  and docId != ''"> and doc_id = #{docId}</if>
+            <if test="caseNumer != null "> and case_numer = #{caseNumer}</if>
+            <if test="workTime != null "> and work_time = #{workTime}</if>
+            <if test="offId != null "> and dept_id = #{offId}</if>
+        </where>
+    </select>
+
+    <select id="selectWorkTimeById" parameterType="Long" resultMap="WorkTimeResult">
+        <include refid="selectWorkTimeVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectWorkTimeByDocId" resultMap="WorkTimeResult">
+        <include refid="selectWorkTimeVo"/>
+        where doc_id = #{doctorId} and work_time = #{workTime}
+    </select>
+
+    <insert id="insertWorkTime" parameterType="WorkTime" useGeneratedKeys="true" keyProperty="id">
+        insert into work_time
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="docId != null">doc_id,</if>
+            <if test="caseNumer != null">case_numer,</if>
+            <if test="workTime != null">work_time,</if>
+            <if test="offId != null">off_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="docId != null">#{docId},</if>
+            <if test="caseNumer != null">#{caseNumer},</if>
+            <if test="workTime != null">#{workTime},</if>
+            <if test="offId != null">#{offId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWorkTime" parameterType="WorkTime">
+        update work_time
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="docId != null">doc_id = #{docId},</if>
+            <if test="caseNumer != null">case_numer = #{caseNumer},</if>
+            <if test="workTime != null">work_time = #{workTime},</if>
+            <if test="offId != null">off_id = #{offId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWorkTimeById" parameterType="Long">
+        delete from work_time where id = #{id}
+    </delete>
+
+    <delete id="deleteWorkTimeByIds" parameterType="String">
+        delete from work_time where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hospital.mapper.AesDataMapper">
+
+    <resultMap type="AesData" id="AesDataResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="tableName"    column="table_name"    />
+        <result property="fieldName"    column="field_name"    />
+        <result property="aesKey"    column="aes_key"    />
+        <result property="aesTransferKey"    column="aes_transfer_key"    />
+    </resultMap>
+
+    <sql id="selectAesDataVo">
+        select id, user_id, table_name, field_name, aes_key, aes_transfer_key from aes_data
+    </sql>
+
+    <select id="selectAesDataList" parameterType="AesData" resultMap="AesDataResult">
+        <include refid="selectAesDataVo"/>
+        <where>
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="tableName != null  and tableName != ''"> and table_name like concat('%', #{tableName}, '%')</if>
+            <if test="fieldName != null  and fieldName != ''"> and field_name like concat('%', #{fieldName}, '%')</if>
+            <if test="aesKey != null  and aesKey != ''"> and aes_key = #{aesKey}</if>
+            <if test="aesTransferKey != null  and aesTransferKey != ''"> and aes_transfer_key = #{aesTransferKey}</if>
+        </where>
+    </select>
+
+    <select id="selectAesDataById" parameterType="Long" resultMap="AesDataResult">
+        <include refid="selectAesDataVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectAesDataByUserId" resultMap="AesDataResult">
+        <include refid="selectAesDataVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertAesData" parameterType="AesData" useGeneratedKeys="true" keyProperty="id">
+        insert into aes_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="tableName != null and tableName != ''">table_name,</if>
+            <if test="fieldName != null and fieldName != ''">field_name,</if>
+            <if test="aesKey != null and aesKey != ''">aes_key,</if>
+            <if test="aesTransferKey != null">aes_transfer_key,</if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="tableName != null and tableName != ''">#{tableName},</if>
+            <if test="fieldName != null and fieldName != ''">#{fieldName},</if>
+            <if test="aesKey != null and aesKey != ''">#{aesKey},</if>
+            <if test="aesTransferKey != null">#{aesTransferKey},</if>
+        </trim>
+
+    </insert>
+
+    <update id="updateAesData" parameterType="AesData">
+        update aes_data
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="tableName != null and tableName != ''">table_name = #{tableName},</if>
+            <if test="fieldName != null and fieldName != ''">field_name = #{fieldName},</if>
+            <if test="aesKey != null and aesKey != ''">aes_key = #{aesKey},</if>
+            <if test="aesTransferKey != null">aes_transfer_key = #{aesTransferKey},</if>
+        </trim>
+        where id = #{id}
+
+    </update>
+
+    <delete id="deleteAesDataById" parameterType="Long">
+        delete from aes_data where id = #{id}
+    </delete>
+
+    <delete id="deleteAesDataByIds" parameterType="String">
+        delete from aes_data where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="delByUserId">
+        delete from aes_data where user_id = #{userId}
+    </delete>
+</mapper>

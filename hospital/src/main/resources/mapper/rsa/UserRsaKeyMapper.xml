@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hospital.mapper.UserRsaKeyMapper">
+    
+    <resultMap type="UserRsaKey" id="UserRsaKeyResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userPrivateKey"    column="user_private_key"    />
+        <result property="userPublicKey"    column="user_public_key"    />
+    </resultMap>
+
+    <sql id="selectUserRsaKeyVo">
+        select id, user_id, user_private_key, user_public_key from user_rsa_key
+    </sql>
+
+    <select id="selectUserRsaKeyList" parameterType="UserRsaKey" resultMap="UserRsaKeyResult">
+        <include refid="selectUserRsaKeyVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userPrivateKey != null  and userPrivateKey != ''"> and user_private_key = #{userPrivateKey}</if>
+            <if test="userPublicKey != null  and userPublicKey != ''"> and user_public_key = #{userPublicKey}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserRsaKeyById" parameterType="Long" resultMap="UserRsaKeyResult">
+        <include refid="selectUserRsaKeyVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectUserRsaKeyByUserId" resultMap="UserRsaKeyResult">
+        <include refid="selectUserRsaKeyVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertUserRsaKey" parameterType="UserRsaKey" useGeneratedKeys="true" keyProperty="id">
+        insert into user_rsa_key
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="userPrivateKey != null and userPrivateKey != ''">user_private_key,</if>
+            <if test="userPublicKey != null and userPublicKey != ''">user_public_key,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userPrivateKey != null and userPrivateKey != ''">#{userPrivateKey},</if>
+            <if test="userPublicKey != null and userPublicKey != ''">#{userPublicKey},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserRsaKey" parameterType="UserRsaKey">
+        update user_rsa_key
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userPrivateKey != null and userPrivateKey != ''">user_private_key = #{userPrivateKey},</if>
+            <if test="userPublicKey != null and userPublicKey != ''">user_public_key = #{userPublicKey},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserRsaKeyById" parameterType="Long">
+        delete from user_rsa_key where id = #{id}
+    </delete>
+
+    <delete id="deleteUserRsaKeyByIds" parameterType="String">
+        delete from user_rsa_key where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="delByUserId">
+        delete from user_rsa_key where user_id = #{userId}
+    </delete>
+</mapper>

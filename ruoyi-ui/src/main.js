@@ -12,7 +12,7 @@ import store from './store'
 import router from './router'
 import directive from './directive' // directive
 import plugins from './plugins' // plugins
-import { download } from '@/utils/request'
+import request, { download } from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
@@ -37,6 +37,11 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+
+import {b64tohex, KJUR} from 'jsrsasign' // base64转16进制 验签所需插件
+import CryptoJS from 'crypto-js' // AES
+import forge from 'node-forge' // RSA
+
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -84,3 +89,5 @@ new Vue({
   store,
   render: h => h(App)
 })
+
+

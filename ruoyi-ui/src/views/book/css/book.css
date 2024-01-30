@@ -1,0 +1,24 @@
+.tag {
+  position: relative; /* 设置为相对定位 */
+  z-index: 1; /* 设为相同值 */
+}
+
+.tag[type="danger"]:before {
+  background-color: transparent;
+} /* 隐藏 el-tag 的 X 按钮 */
+
+.tag[type="warning"]:before {
+  background-color: transparent;
+  font-size: 18px;
+  font-weight: bold;
+} /* 自定义 el-tag 的警告图标 */
+
+.tag[type="success"]:before {
+  background-color: transparent;
+  font-size: 18px;
+  font-weight: bold;
+} /* 自定义 el-tag 的成功图标 */
+
+.tag:has([type="danger"]) { /* 如果标签中包含有号，则该标签表示有号 */
+  z-index: 2; /* 设为较大值 */
+}

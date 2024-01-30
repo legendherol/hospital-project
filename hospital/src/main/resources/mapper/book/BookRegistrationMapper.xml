@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hospital.mapper.BookRegistrationMapper">
+
+    <resultMap type="BookRegistration" id="BookRegistrationResult">
+        <result property="registrationId"    column="registration_id"    />
+        <result property="patientId"    column="patient_id"    />
+        <result property="patientName"    column="patient_name"    />
+        <result property="doctorId"    column="doctor_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="treatmentTime"    column="treatment_time"    />
+        <result property="doctorName"    column="doctor_name"    />
+        <result property="treatmentNum"    column="treatmentNum"    />
+    </resultMap>
+
+
+    <sql id="selectBookRegistrationVo">
+        select registration_id, patient_id, patient_name, doctor_id, create_time, treatment_time, doctor_name,treatmentNum from book_registration
+    </sql>
+
+    <select id="selectBookRegistrationList" parameterType="BookRegistration" resultMap="BookRegistrationResult">
+        <include refid="selectBookRegistrationVo"/>
+        <where>
+            <if test="patientId != null "> and patient_id = #{patientId}</if>
+            <if test="patientName != null  and patientName != ''"> and patient_name like concat('%', #{patientName}, '%')</if>
+            <if test="doctorId != null "> and doctor_id = #{doctorId}</if>
+            <if test="treatmentTime != null "> and treatment_time = #{treatmentTime}</if>
+            <if test="doctorName != null  and doctorName != ''"> and doctor_name like concat('%', #{doctorName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectBookRegistrationByRegistrationId" parameterType="Long" resultMap="BookRegistrationResult">
+        <include refid="selectBookRegistrationVo"/>
+        where registration_id = #{registrationId}
+    </select>
+    <resultMap type="WorkTime" id="WorkTimeRes">
+        <result property="id"    column="id"    />
+        <result property="docId"    column="doc_id"    />
+        <result property="caseNumer"    column="case_numer"    />
+        <result property="workTime"    column="work_time"    />
+        <result property="offId"    column="off_id"    />
+        <association property="doctor" javaType="doctor">
+            <id column="doctorId" property="id"></id>
+            <result column="username" property="username"></result>
+            <result column="userId" property="userId"></result>
+            <result column="position" property="position"></result>
+        </association>
+        <association property="office" javaType="office">
+            <id column="officeId" property="officeId"></id>
+            <result column="officeName" property="officeName"></result>
+        </association>
+    </resultMap>
+    <select id="getWorkTime" resultMap="WorkTimeRes">
+        select w.id, doc_id, case_numer, work_time, off_id,d.id as doctorId,d.username as username,d.position as position ,o.office_name as officeName,d.user_id as userId from work_time w left join
+         doctor d on w.doc_id = d.user_id left join office o on d.dept_id = o.office_id
+        <where>
+            <if test="officeId != null  and officeId != ''"> and o.office_id= #{officeId}</if>
+        </where>
+    </select>
+
+    <resultMap type="BookRegistration" id="BookRegistrationRes">
+        <result property="registrationId"    column="registration_id"    />
+        <result property="patientId"    column="patient_id"    />
+        <result property="patientName"    column="patient_name"    />
+        <result property="doctorId"    column="doctor_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="treatmentTime"    column="treatment_time"    />
+        <result property="doctorName"    column="doctor_name"    />
+        <result property="treatmentNum"    column="treatmentNum"    />
+        <association property="patient" javaType="patient">
+            <id column="pId" property="patientId"></id>
+            <result column="age" property="age"></result>
+        </association>
+    </resultMap>
+    <select id="getBookList" resultMap="BookRegistrationRes">
+        select p.patient_id pId,p.age as age, registration_id, b.patient_id, b.patient_name, b.doctor_id, b.create_time, treatment_time, b.doctor_name,b.treatmentNum from book_registration b
+         left join patient p on b.patient_id = p.patient_id
+        where b.doctor_id = #{userId}
+    </select>
+    <select id="selectPatientByTreat" resultMap="BookRegistrationResult">
+        <include refid="selectBookRegistrationVo"/>
+        where treatmentNum = #{treatmentNum}
+    </select>
+
+
+    <insert id="insertBookRegistration" parameterType="BookRegistration">
+        insert into book_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="registrationId != null">registration_id,</if>
+            <if test="patientId != null">patient_id,</if>
+            <if test="patientName != null and patientName != ''">patient_name,</if>
+            <if test="doctorId != null">doctor_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="treatmentTime != null">treatment_time,</if>
+            <if test="doctorName != null and doctorName != ''">doctor_name,</if>
+            <if test="treatmentNum != null and treatmentNum != ''">treatmentNum,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="registrationId != null">#{registrationId},</if>
+            <if test="patientId != null">#{patientId},</if>
+            <if test="patientName != null and patientName != ''">#{patientName},</if>
+            <if test="doctorId != null">#{doctorId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="treatmentTime != null">#{treatmentTime},</if>
+            <if test="doctorName != null and doctorName != ''">#{doctorName},</if>
+            <if test="treatmentNum != null and treatmentNum != ''">#{treatmentNum},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBookRegistration" parameterType="BookRegistration">
+        update book_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="patientId != null">patient_id = #{patientId},</if>
+            <if test="patientName != null and patientName != ''">patient_name = #{patientName},</if>
+            <if test="doctorId != null">doctor_id = #{doctorId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="treatmentTime != null">treatment_time = #{treatmentTime},</if>
+            <if test="doctorName != null and doctorName != ''">doctor_name = #{doctorName},</if>
+            <if test="treatmentNum != null and treatmentNum != ''">treatmentNum = #{treatmentNum},</if>
+        </trim>
+        where registration_id = #{registrationId}
+    </update>
+
+    <delete id="deleteBookRegistrationByRegistrationId" parameterType="Long">
+        delete from book_registration where registration_id = #{registrationId}
+    </delete>
+
+    <delete id="deleteBookRegistrationByRegistrationIds" parameterType="String">
+        delete from book_registration where registration_id in
+        <foreach item="registrationId" collection="array" open="(" separator="," close=")">
+            #{registrationId}
+        </foreach>
+    </delete>
+</mapper>
