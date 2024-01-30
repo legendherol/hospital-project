@@ -6,3 +6,5 @@ npm install
 npm run dev
 
 in sequence.
+
+Before u execute project,please create a mysql database named ry-vue and execute sql using ry-vue.sql file
